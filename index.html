@@ -819,6 +819,180 @@
             .btn { width: 100%; justify-content: center; max-width: 280px; }
             h2 { font-size: 1.7rem; }
         }
+
+        /* ============================
+           FLOATING VIDEO PLAYER
+        ============================ */
+        .fv-card {
+            position: fixed;
+            bottom: 28px;
+            right: 24px;
+            z-index: 2000;
+            width: 330px;
+            background: var(--bg-card);
+            border: 1px solid rgba(0,212,255,0.35);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,212,255,0.08);
+            opacity: 0;
+            transform: translateY(130%) scale(0.8);
+            transition: transform 0.72s cubic-bezier(0.34,1.56,0.64,1),
+                        opacity 0.5s ease,
+                        width 0.38s ease,
+                        height 0.38s ease,
+                        border-radius 0.38s ease,
+                        top 0.38s ease,
+                        left 0.38s ease,
+                        box-shadow 0.28s ease;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .fv-card.fv-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .fv-card.fv-dragging {
+            transition: box-shadow 0.2s ease !important;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 2px var(--accent) !important;
+            cursor: grabbing !important;
+        }
+
+        .fv-card.fv-full {
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            border-radius: 0 !important;
+        }
+
+        .fv-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 11px 14px;
+            background: linear-gradient(90deg, rgba(79,110,247,0.18), rgba(0,212,255,0.09));
+            border-bottom: 1px solid var(--border);
+            cursor: grab;
+        }
+        .fv-bar:active { cursor: grabbing; }
+
+        .fv-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fv-pulse {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #00d4ff;
+            flex-shrink: 0;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        .fv-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: 0.4px;
+        }
+
+        .fv-bar-right { display: flex; gap: 5px; }
+
+        .fv-btn {
+            width: 29px;
+            height: 29px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.77rem;
+            transition: all 0.22s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .fv-btn:hover { background: var(--tag-bg); color: var(--accent); border-color: var(--accent); }
+        .fv-btn.fv-x:hover { background: rgba(244,63,94,0.1); color: var(--accent2); border-color: var(--accent2); }
+
+        .fv-body {
+            position: relative;
+            height: 190px;
+            background: #000;
+            overflow: hidden;
+        }
+        .fv-card.fv-full .fv-body { height: calc(100vh - 52px); }
+
+        .fv-body video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .fv-gradient {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 55%);
+            pointer-events: none;
+        }
+
+        .fv-no-src {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            gap: 10px;
+        }
+        .fv-no-src i { font-size: 2.2rem; opacity: 0.25; }
+
+        /* Restore floating action button */
+        .fv-fab {
+            position: fixed;
+            bottom: 28px;
+            right: 24px;
+            z-index: 2000;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border: none;
+            color: #fff;
+            font-size: 1.15rem;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 28px rgba(79,110,247,0.55);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: none;
+        }
+        .fv-fab:hover { transform: scale(1.12); box-shadow: 0 14px 36px rgba(79,110,247,0.75); }
+        .fv-fab.fv-fab-show {
+            display: flex;
+            animation: fvFabPop 0.42s cubic-bezier(0.34,1.56,0.64,1) both;
+        }
+
+        @keyframes fvFabPop {
+            from { transform: scale(0); opacity: 0; }
+            to   { transform: scale(1); opacity: 1; }
+        }
+
+        @media (max-width: 480px) {
+            .fv-card { width: calc(100vw - 32px); right: 16px; bottom: 16px; }
+            .fv-fab  { right: 16px; bottom: 16px; }
+        }
     </style>
 </head>
 <body>
@@ -868,7 +1042,7 @@
                 <span class="line-1">Master the</span><br>
                 <span class="line-2">Digital Future</span>
             </h1>
-            <p class="reveal">Professional Home Tuition &amp; High-End Web Development — built for Ghana, built for the world.</p>
+            <p class="reveal">IT Educator &amp; Full-Stack Creator — home tuition, web &amp; mobile apps, graphic design, and video production. Based in Accra, Ghana.</p>
             <div class="hero-btns reveal">
                 <a href="https://wa.me/233595232383" class="btn btn-primary">
                     <i class="fab fa-whatsapp"></i> WhatsApp Me
@@ -903,15 +1077,15 @@
                 <div class="pkg-card reveal">
                     <div class="pkg-icon"><i class="fas fa-child"></i></div>
                     <div class="pkg-title">Kids &amp; JHS</div>
-                    <div class="pkg-price">300 <sub>GHS</sub></div>
-                    <div class="pkg-period">4 sessions/month · 4 hrs each</div>
+                    <div class="pkg-price">1,200 <sub>GHS</sub></div>
+                    <div class="pkg-period">8 sessions/month · 1 hr each</div>
                     <div class="pkg-divider"></div>
                     <ul class="feature-list">
                         <li><i class="fas fa-circle-check"></i> Grade 1–6 ICT Tuition</li>
-                        <li><i class="fas fa-circle-check"></i> 4 hours per session</li>
-                        <li><i class="fas fa-circle-check"></i> 4 Sessions Monthly</li>
-                        <li><i class="fas fa-circle-check"></i> <strong>+ Homework:</strong> 350 GHS</li>
-                        <li><i class="fas fa-circle-check"></i> <strong>JHS 1–3:</strong> 350 GHS</li>
+                        <li><i class="fas fa-circle-check"></i> 1 hour per session</li>
+                        <li><i class="fas fa-circle-check"></i> 8 Sessions Monthly</li>
+                        <li><i class="fas fa-circle-check"></i> <strong>+ Homework:</strong> 1,500 GHS</li>
+                        <li><i class="fas fa-circle-check"></i> <strong>JHS 1–3:</strong> 1,700 GHS</li>
                     </ul>
                 </div>
 
@@ -919,46 +1093,68 @@
                 <div class="pkg-card featured reveal">
                     <div class="pkg-icon"><i class="fas fa-user-graduate"></i></div>
                     <div class="pkg-title">Adult Tech Training</div>
-                    <div class="pkg-price">600 <sub>GHS</sub></div>
-                    <div class="pkg-period">4 sessions · 3–4 hrs each</div>
+                    <div class="pkg-price">1,000 <sub>GHS</sub></div>
+                    <div class="pkg-period">8 sessions · 1 hr each</div>
                     <div class="pkg-divider"></div>
                     <ul class="feature-list">
                         <li><i class="fas fa-circle-check"></i> Graphic Design &amp; Branding</li>
                         <li><i class="fas fa-circle-check"></i> Coding Basics</li>
                         <li><i class="fas fa-circle-check"></i> Advanced Office Skills</li>
-                        <li><i class="fas fa-circle-check"></i> 4 Sessions (3–4 hrs)</li>
+                        <li><i class="fas fa-circle-check"></i> 8 Sessions (1 hr each)</li>
                     </ul>
                 </div>
 
-                <!-- Web Dev Masterclass -->
-                <div class="pkg-card reveal">
-                    <div class="pkg-icon"><i class="fas fa-globe"></i></div>
-                    <div class="pkg-title">Web Dev Masterclass</div>
-                    <div class="pkg-price">1000 <sub>GHS</sub></div>
-                    <div class="pkg-period">8 sessions/month · 4 hrs each</div>
-                    <div class="pkg-divider"></div>
-                    <ul class="feature-list">
-                        <li><i class="fas fa-circle-check"></i> For All Ages</li>
-                        <li><i class="fas fa-circle-check"></i> Build Real Websites</li>
-                        <li><i class="fas fa-circle-check"></i> 8× a month</li>
-                        <li><i class="fas fa-circle-check"></i> 4 Hour Sessions</li>
-                    </ul>
-                </div>
-
-                <!-- Website Design -->
+              <!-- Website Design -->
                 <div class="pkg-card accent-card reveal">
                     <div class="pkg-icon" style="color:var(--accent); border-color:rgba(0,212,255,0.2);"><i class="fas fa-laptop-code"></i></div>
                     <div class="pkg-title">Website Design</div>
                     <div class="pkg-price">1500 <sub>GHS</sub></div>
-                    <div class="pkg-period">Delivery within 48 hrs</div>
+                    <div class="pkg-period">Delivery within 48 hrs
+                        <br> 5,000ghc+ premium site
+                    </div>
                     <div class="pkg-divider"></div>
                     <ul class="feature-list">
-                        <li><i class="fas fa-circle-check"></i> Standard Site Development</li>
+                        <li><i class="fas fa-circle-check"></i> Standard Site Development (1,500ghc)</li>
                         <li><i class="fas fa-circle-check"></i> Delivery: Within 48hrs</li>
                         <li><i class="fas fa-circle-check"></i> <strong>+ Firebase DB:</strong> 2000 GHS</li>
                         <li><i class="fas fa-circle-check"></i> DB Delivery: 78hrs</li>
                     </ul>
                 </div>
+
+               <!-- Video Editing -->
+                <div class="pkg-card reveal">
+                    <div class="pkg-icon"><i class="fas fa-video"></i></div>
+                    <div class="pkg-title">Video Editing</div>
+                    <div class="pkg-price" style="font-size:1.9rem;">350–600 <sub>GHS</sub></div>
+                    <div class="pkg-period">Price based on complexity</div>
+                    <div class="pkg-divider"></div>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-circle-check"></i> Professional Cuts &amp; Transitions</li>
+                        <li><i class="fas fa-circle-check"></i> Motions Graphic</li>
+                        <li><i class="fas fa-circle-check"></i> YouTube / Social Media</li>
+                        <li><i class="fas fa-circle-check"></i> Price based on complexity</li>
+                    </ul>
+                </div>
+
+                <!-- Class projects -->
+                <div class="pkg-card reveal">
+                    <div class="pkg-icon"><i class="fas fa-globe"></i></div>
+                    <div class="pkg-title">School Projects</div>
+                    <div class="pkg-price">100 - 1000 <sub>GHS</sub></div>
+                    <div class="pkg-period">UNIVERSITY · COLLEGE · HIGHSCHOOL · PERSONAL</div>
+                    <div class="pkg-divider"></div>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-circle-check"></i> Illustrator</li>
+                        <li><i class="fas fa-circle-check"></i> Powerpoint</li>
+                        <li><i class="fas fa-circle-check"></i> Canva</li>
+                        <li><i class="fas fa-circle-check"></i> Photoshop</li>
+                        <li><i class="fas fa-circle-check"></i> Excel</li>
+                        <li><i class="fas fa-circle-check"></i> Word</li>
+                        <li><i class="fas fa-circle-check"></i> ATHE IT</li>
+                    </ul>
+                </div>
+
+                
 
                 <!-- Graphic Design -->
                 <div class="pkg-card reveal">
@@ -975,18 +1171,35 @@
                     </ul>
                 </div>
 
-                <!-- Video Editing -->
-                <div class="pkg-card reveal">
-                    <div class="pkg-icon"><i class="fas fa-video"></i></div>
-                    <div class="pkg-title">Video Editing</div>
-                    <div class="pkg-price" style="font-size:1.9rem;">350–500 <sub>GHS</sub></div>
-                    <div class="pkg-period">Price based on complexity</div>
+               
+
+                <!-- Mobile App Development -->
+                <div class="pkg-card accent-card reveal">
+                    <div class="pkg-icon" style="color:var(--secondary); background:rgba(124,58,237,0.08); border-color:rgba(124,58,237,0.2);"><i class="fas fa-mobile-screen-button"></i></div>
+                    <div class="pkg-title">Mobile App Development</div>
+                    <div class="pkg-price" style="font-size:1.9rem;">3000 <sub>GHS+</sub></div>
+                    <div class="pkg-period">Flutter · Android &amp; iOS</div>
                     <div class="pkg-divider"></div>
                     <ul class="feature-list">
-                        <li><i class="fas fa-circle-check"></i> Professional Cuts &amp; Transitions</li>
-                        <li><i class="fas fa-circle-check"></i> Color Grading &amp; Sound</li>
-                        <li><i class="fas fa-circle-check"></i> YouTube / Social Media</li>
+                        <li><i class="fas fa-circle-check"></i> Cross-Platform (Android &amp; iOS)</li>
+                        <li><i class="fas fa-circle-check"></i> Firebase Backend Integration</li>
+                        <li><i class="fas fa-circle-check"></i> Clean UI/UX with Figma</li>
                         <li><i class="fas fa-circle-check"></i> Price based on complexity</li>
+                    </ul>
+                </div>
+
+                <!-- Social Media & Branding -->
+                <div class="pkg-card reveal">
+                    <div class="pkg-icon"><i class="fas fa-bullhorn"></i></div>
+                    <div class="pkg-title">Social Media &amp; Branding</div>
+                    <div class="pkg-price">500 <sub>GHS+</sub></div>
+                    <div class="pkg-period">Monthly packages available</div>
+                    <div class="pkg-divider"></div>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-circle-check"></i> Corporate Branding &amp; Identity</li>
+                        <li><i class="fas fa-circle-check"></i> Motion Graphics &amp; Animation</li>
+                        <li><i class="fas fa-circle-check"></i> Social Media Strategy</li>
+                        <li><i class="fas fa-circle-check"></i> Digital Media Asset Creation</li>
                     </ul>
                 </div>
 
@@ -1140,9 +1353,10 @@
         <div class="container footer-inner">
             <p class="footer-copy">&copy; 2026 <span>Wisdom Ahiadeke Computing</span>. Designed with passion.</p>
             <div class="footer-links">
-                <a href="https://wa.me/233595232383" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="https://wa.me/233595232383" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://github.com/WizzyB010" aria-label="GitHub" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/wisdom-ahiadeke-b1a957280/" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.instagram.com/wizzyboy010_" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
             </div>
         </div>
     </footer>
@@ -1287,6 +1501,130 @@
         window.addEventListener('resize', () => { resize(); createNodes(); });
 
         resize(); createNodes(); draw();
+
+        /* ── Floating Video Player ── */
+        (function () {
+            document.addEventListener('DOMContentLoaded', function () {
+            const card      = document.getElementById('fvCard');
+            const bar       = document.getElementById('fvBar');
+            const vid       = document.getElementById('fvVideo');
+            const muteBtn   = document.getElementById('fvMuteBtn');
+            const muteIcon  = document.getElementById('fvMuteIcon');
+            const expandBtn = document.getElementById('fvExpandBtn');
+            const expandIcon= document.getElementById('fvExpandIcon');
+            const closeBtn  = document.getElementById('fvCloseBtn');
+            const fab       = document.getElementById('fvFab');
+
+            let isFullscreen = false;
+            let isDragging   = false;
+            let ox = 0, oy = 0;
+            let savedStyles  = {};
+
+            // Intro slide-up — short delay so user sees the animation
+            setTimeout(() => card.classList.add('fv-visible'), 1200);
+
+            // ── Mute toggle ──
+            muteBtn.addEventListener('click', e => {
+                e.stopPropagation();
+                vid.muted = !vid.muted;
+                muteIcon.className = vid.muted ? 'fas fa-volume-xmark' : 'fas fa-volume-high';
+            });
+
+            // ── Expand / collapse ──
+            expandBtn.addEventListener('click', e => {
+                e.stopPropagation();
+                isFullscreen = !isFullscreen;
+                if (isFullscreen) {
+                    savedStyles = {
+                        left: card.style.left, top: card.style.top,
+                        right: card.style.right, bottom: card.style.bottom
+                    };
+                    card.classList.add('fv-full');
+                    expandIcon.className = 'fas fa-compress';
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    card.classList.remove('fv-full');
+                    expandIcon.className = 'fas fa-expand';
+                    document.body.style.overflow = '';
+                    card.style.left   = savedStyles.left   || '';
+                    card.style.top    = savedStyles.top    || '';
+                    card.style.right  = savedStyles.right  || '';
+                    card.style.bottom = savedStyles.bottom || '';
+                }
+            });
+
+            // ── Close ──
+            closeBtn.addEventListener('click', e => {
+                e.stopPropagation();
+                card.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+                card.style.transform  = 'translateY(130%) scale(0.8)';
+                card.style.opacity    = '0';
+                setTimeout(() => {
+                    card.style.display = 'none';
+                    fab.classList.add('fv-fab-show');
+                }, 420);
+            });
+
+            // ── Restore ──
+            fab.addEventListener('click', () => {
+                card.style.display    = '';
+                card.style.transition = '';
+                fab.classList.remove('fv-fab-show');
+                requestAnimationFrame(() => {
+                    card.style.transform = '';
+                    card.style.opacity   = '';
+                });
+            });
+
+            // ── Drag helpers ──
+            function clientXY(e) {
+                return e.touches
+                    ? { x: e.touches[0].clientX, y: e.touches[0].clientY }
+                    : { x: e.clientX,             y: e.clientY };
+            }
+
+            function startDrag(e) {
+                if (isFullscreen) return;
+                const { x, y } = clientXY(e);
+                const rect = card.getBoundingClientRect();
+                ox = x - rect.left;
+                oy = y - rect.top;
+                // Switch to top/left positioning so we can freely move
+                card.style.right  = 'auto';
+                card.style.bottom = 'auto';
+                card.style.left   = rect.left + 'px';
+                card.style.top    = rect.top  + 'px';
+                card.style.transition = 'box-shadow 0.2s ease';
+                isDragging = true;
+                card.classList.add('fv-dragging');
+                e.preventDefault();
+            }
+
+            function onDrag(e) {
+                if (!isDragging) return;
+                const { x, y } = clientXY(e);
+                const newL = Math.max(0, Math.min(x - ox, window.innerWidth  - card.offsetWidth));
+                const newT = Math.max(0, Math.min(y - oy, window.innerHeight - card.offsetHeight));
+                card.style.left = newL + 'px';
+                card.style.top  = newT + 'px';
+                e.preventDefault();
+            }
+
+            function stopDrag() {
+                if (!isDragging) return;
+                isDragging = false;
+                card.style.transition = '';
+                card.classList.remove('fv-dragging');
+            }
+
+            bar.addEventListener('mousedown',  startDrag);
+            bar.addEventListener('touchstart', startDrag, { passive: false });
+            document.addEventListener('mousemove',  onDrag);
+            document.addEventListener('touchmove',  onDrag, { passive: false });
+            document.addEventListener('mouseup',    stopDrag);
+            document.addEventListener('touchend',   stopDrag);
+            }); // end DOMContentLoaded
+        })();
     </script>
 
     <!-- ============================
@@ -1434,7 +1772,7 @@
 
                 const replyBtn = user ? `<button class="r-reply-btn" onclick="toggleReply('${data.id}')"><i class="fas fa-reply"></i> Reply</button>` : '';
                 const replyInput = `
-                    <div id="reply-form-${data.id}" style="display:none; margin-top:14px; margin-left:58px; display:none;">
+                    <div id="reply-form-${data.id}" style="display:none; margin-top:14px; >
                         <div style="display:flex; gap:10px;">
                             <input type="text" id="reply-input-${data.id}" placeholder="Write a reply..." style="margin-bottom:0; flex:1;">
                             <button class="btn btn-primary" style="padding:10px 20px; border-radius:12px; font-size:0.82rem; white-space:nowrap;" onclick="submitReply('${data.id}')">Send</button>
@@ -1479,6 +1817,47 @@
             }
         };
     </script>
+
+    <!-- ============================
+         FLOATING VIDEO PLAYER
+    ============================ -->
+    <div class="fv-card" id="fvCard">
+        <div class="fv-bar" id="fvBar">
+            <div class="fv-bar-left">
+                <span class="fv-pulse"></span>
+                <span class="fv-label">Wisdom Tech</span>
+            </div>
+            <div class="fv-bar-right">
+                <button class="fv-btn" id="fvMuteBtn" title="Toggle mute">
+                    <i class="fas fa-volume-xmark" id="fvMuteIcon"></i>
+                </button>
+                <button class="fv-btn" id="fvExpandBtn" title="Expand">
+                    <i class="fas fa-expand" id="fvExpandIcon"></i>
+                </button>
+                <button class="fv-btn fv-x" id="fvCloseBtn" title="Close">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+        <div class="fv-body">
+            <!--
+                ▶ ADD YOUR VIDEO HERE
+                Replace the <source> src with your actual video file.
+                Example:  <source src="promo.mp4" type="video/mp4">
+                You can also use a hosted URL.
+            -->
+            <video id="fvVideo" loop muted autoplay playsinline preload="auto">
+                <source src="WEB%20DESIGN%20(1)%20(1).mp4" type="video/mp4">
+            </video>
+            <div class="fv-gradient"></div>
+            <div class="fv-no-src" id="fvNoSrc" style="display:none;"></div>
+        </div>
+    </div>
+
+    <!-- Restore FAB (shown after closing the player) -->
+    <button class="fv-fab" id="fvFab" title="Show video">
+        <i class="fas fa-play"></i>
+    </button>
 
 </body>
 </html>
