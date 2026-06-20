@@ -1333,6 +1333,7 @@
 
                 <!-- Review Form -->
                 <form id="review-form" style="display:none;">
+                    <div id="review-msg" style="display:none; font-size:0.88rem; font-weight:600; margin-bottom:10px; padding:10px 14px; border-radius:10px; background:var(--tag-bg); border:1px solid var(--border);"></div>
                     <select id="rating-select">
                         <option value="5">★★★★★ — Excellent</option>
                         <option value="4">★★★★☆ — Good</option>
@@ -1694,15 +1695,47 @@
 
         reviewForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const text = document.getElementById('review-text').value;
+            const text = document.getElementById('review-text').value.trim();
             const rating = parseInt(document.getElementById('rating-select').value);
             const user = auth.currentUser;
-            if (user && text) {
+            const submitBtn = reviewForm.querySelector('button[type="submit"]');
+            const msgEl = document.getElementById('review-msg');
+
+            msgEl.style.display = 'none';
+
+            if (!user) {
+                msgEl.textContent = 'Please sign in first.';
+                msgEl.style.color = 'var(--accent2)';
+                msgEl.style.display = 'block';
+                return;
+            }
+            if (!text) {
+                msgEl.textContent = 'Please write something before posting.';
+                msgEl.style.color = 'var(--accent2)';
+                msgEl.style.display = 'block';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting…';
+
+            try {
                 await addDoc(collection(db, "reviews"), {
                     uid: user.uid, name: user.displayName, photo: user.photoURL,
                     text: text, rating: rating, createdAt: serverTimestamp(), replies: []
                 });
-                document.getElementById('review-text').value = "";
+                document.getElementById('review-text').value = '';
+                msgEl.textContent = 'Review posted!';
+                msgEl.style.color = 'var(--accent)';
+                msgEl.style.display = 'block';
+                setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
+            } catch (err) {
+                msgEl.textContent = 'Error: ' + err.message;
+                msgEl.style.color = 'var(--accent2)';
+                msgEl.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Post Review';
             }
         });
 
