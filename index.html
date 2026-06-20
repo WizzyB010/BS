@@ -989,9 +989,18 @@
             to   { transform: scale(1); opacity: 1; }
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 600px) {
             .fv-card { width: calc(100vw - 32px); right: 16px; bottom: 16px; }
             .fv-fab  { right: 16px; bottom: 16px; }
+            .fv-bar  { padding: 13px 14px; }
+            .fv-btn  {
+                width: 44px;
+                height: 44px;
+                border-radius: 10px;
+                font-size: 1rem;
+            }
+            .fv-bar-right { gap: 8px; }
+            .fv-body { height: 200px; }
         }
     </style>
 </head>
@@ -1585,6 +1594,7 @@
 
             function startDrag(e) {
                 if (isFullscreen) return;
+                if (e.target.closest('.fv-btn')) return;
                 const { x, y } = clientXY(e);
                 const rect = card.getBoundingClientRect();
                 ox = x - rect.left;
