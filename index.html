@@ -1002,9 +1002,265 @@
             .fv-bar-right { gap: 8px; }
             .fv-body { height: 200px; }
         }
+
+        /* ============================
+           PAGE LOADER
+        ============================ */
+        #pageLoader {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: #04060f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: opacity 0.65s ease, transform 0.65s cubic-bezier(0.4,0,0.2,1);
+        }
+        #pageLoader.pl-hide {
+            opacity: 0;
+            transform: translateY(-18px);
+            pointer-events: none;
+        }
+        .pl-bg {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+            background-size: 44px 44px;
+            animation: plGridPulse 3s ease-in-out infinite;
+        }
+        @keyframes plGridPulse {
+            0%,100% { opacity: 0.45; }
+            50%      { opacity: 1; }
+        }
+        .pl-glow {
+            position: absolute;
+            width: 580px;
+            height: 580px;
+            background: radial-gradient(circle, rgba(79,110,247,0.13) 0%, rgba(0,212,255,0.07) 45%, transparent 70%);
+            border-radius: 50%;
+            animation: plGlowPulse 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes plGlowPulse {
+            0%,100% { transform: scale(1);    opacity: 0.8; }
+            50%      { transform: scale(1.18); opacity: 1; }
+        }
+        .pl-corners, .pl-corners .pl-c2 {
+            position: absolute;
+            inset: 22px;
+            pointer-events: none;
+        }
+        .pl-corners::before, .pl-corners::after,
+        .pl-corners .pl-c2::before, .pl-corners .pl-c2::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-style: solid;
+            border-color: rgba(0,212,255,0.38);
+            opacity: 0;
+            animation: plCornerIn 0.5s ease both 0.2s;
+        }
+        .pl-corners::before   { top: 0;    left: 0;  border-width: 2px 0 0 2px; }
+        .pl-corners::after    { top: 0;    right: 0; border-width: 2px 2px 0 0; }
+        .pl-corners .pl-c2::before { bottom: 0; left: 0;  border-width: 0 0 2px 2px; }
+        .pl-corners .pl-c2::after  { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+        @keyframes plCornerIn {
+            from { opacity: 0; transform: scale(0.5); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        .pl-scan {
+            position: absolute;
+            left: 0; right: 0;
+            top: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(0,212,255,0.55) 50%, transparent 100%);
+            animation: plScanLine 2.4s linear infinite 0.5s;
+            opacity: 0;
+        }
+        @keyframes plScanLine {
+            0%   { top: 0%;   opacity: 0; }
+            4%   { opacity: 1; }
+            96%  { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+        .pl-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .pl-logo-wrap {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            margin-bottom: 30px;
+            opacity: 0;
+            animation: plLogoIn 0.7s cubic-bezier(0.34,1.56,0.64,1) both 0.15s;
+        }
+        @keyframes plLogoIn {
+            from { opacity: 0; transform: scale(0.35) rotate(-10deg); }
+            to   { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+        .pl-logo {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(0,212,255,0.45);
+            box-shadow: 0 0 30px rgba(0,212,255,0.38), 0 0 65px rgba(79,110,247,0.22);
+        }
+        .pl-ring {
+            position: absolute;
+            inset: -9px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: #00d4ff;
+            border-right-color: rgba(0,212,255,0.22);
+            animation: plSpin 1.2s linear infinite;
+        }
+        .pl-ring-2 {
+            inset: -18px;
+            border-top-color: transparent;
+            border-right-color: transparent;
+            border-bottom-color: rgba(79,110,247,0.65);
+            border-left-color: rgba(79,110,247,0.18);
+            animation: plSpin 2.2s linear infinite reverse;
+        }
+        @keyframes plSpin { to { transform: rotate(360deg); } }
+        .pl-brand {
+            display: flex;
+            align-items: center;
+            font-family: 'Syne', sans-serif;
+            font-size: 2.1rem;
+            font-weight: 800;
+            letter-spacing: 7px;
+            color: #e8edf5;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .pl-brand span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(22px);
+            animation: plLetterIn 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+        }
+        .pl-brand .pl-sp { width: 14px; }
+        .pl-brand .pl-ac { color: #00d4ff; }
+        .pl-brand span:nth-child(1)  { animation-delay: 0.38s; }
+        .pl-brand span:nth-child(2)  { animation-delay: 0.45s; }
+        .pl-brand span:nth-child(3)  { animation-delay: 0.52s; }
+        .pl-brand span:nth-child(4)  { animation-delay: 0.59s; }
+        .pl-brand span:nth-child(5)  { animation-delay: 0.66s; }
+        .pl-brand span:nth-child(6)  { animation-delay: 0.73s; }
+        .pl-brand span:nth-child(7)  { animation-delay: 0.80s; }
+        .pl-brand span:nth-child(8)  { animation-delay: 0.87s; }
+        .pl-brand span:nth-child(9)  { animation-delay: 0.94s; }
+        .pl-brand span:nth-child(10) { animation-delay: 1.01s; }
+        .pl-brand span:nth-child(11) { animation-delay: 1.08s; }
+        @keyframes plLetterIn {
+            from { opacity: 0; transform: translateY(22px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .pl-tagline {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.72rem;
+            color: rgba(148,163,184,0.6);
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: plFadeUp 0.5s ease both 1.15s;
+        }
+        @keyframes plFadeUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .pl-bar-wrap {
+            width: 210px;
+            height: 2px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 13px;
+            opacity: 0;
+            animation: plFadeUp 0.4s ease both 1.25s;
+        }
+        .pl-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4f6ef7, #00d4ff);
+            border-radius: 10px;
+            box-shadow: 0 0 14px rgba(0,212,255,0.75);
+        }
+        .pl-status {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.72rem;
+            color: rgba(100,116,139,0.75);
+            letter-spacing: 0.8px;
+            min-height: 16px;
+            opacity: 0;
+            animation: plFadeUp 0.4s ease both 1.35s;
+        }
+        .pl-dots {
+            position: absolute;
+            bottom: 32px;
+            display: flex;
+            gap: 7px;
+            opacity: 0;
+            animation: plFadeUp 0.4s ease both 1.45s;
+        }
+        .pl-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: rgba(0,212,255,0.45);
+            animation: plDotBounce 1.1s ease-in-out infinite;
+        }
+        .pl-dot:nth-child(2) { animation-delay: 0.18s; background: rgba(79,110,247,0.65); }
+        .pl-dot:nth-child(3) { animation-delay: 0.36s; }
+        @keyframes plDotBounce {
+            0%,100% { transform: translateY(0);   opacity: 0.45; }
+            50%      { transform: translateY(-7px); opacity: 1; }
+        }
     </style>
 </head>
 <body>
+
+    <!-- ============================
+         PAGE LOADER
+    ============================ -->
+    <div id="pageLoader">
+        <div class="pl-bg"></div>
+        <div class="pl-glow"></div>
+        <div class="pl-corners"><div class="pl-c2"></div></div>
+        <div class="pl-scan"></div>
+        <div class="pl-content">
+            <div class="pl-logo-wrap">
+                <img src="Gemini_Generated_Image_tbbnt1tbbnt1tbbn.png" class="pl-logo" alt="Logo">
+                <div class="pl-ring"></div>
+                <div class="pl-ring pl-ring-2"></div>
+            </div>
+            <div class="pl-brand">
+                <span>W</span><span>I</span><span>S</span><span>D</span><span>O</span><span>M</span><span class="pl-sp"></span><span class="pl-ac">T</span><span class="pl-ac">E</span><span class="pl-ac">C</span><span class="pl-ac">H</span>
+            </div>
+            <div class="pl-tagline">IT Education &bull; Web Dev &bull; Design</div>
+            <div class="pl-bar-wrap">
+                <div class="pl-bar" id="plBar"></div>
+            </div>
+            <div class="pl-status" id="plStatus">Initializing…</div>
+        </div>
+        <div class="pl-dots">
+            <div class="pl-dot"></div>
+            <div class="pl-dot"></div>
+            <div class="pl-dot"></div>
+        </div>
+    </div>
 
     <!-- Spider Canvas -->
     <canvas id="spider-canvas"></canvas>
@@ -1375,6 +1631,45 @@
          SCRIPTS
     ============================ -->
     <script>
+        /* ── Page Loader ── */
+        (function () {
+            const loader = document.getElementById('pageLoader');
+            const bar    = document.getElementById('plBar');
+            const status = document.getElementById('plStatus');
+            const msgs   = ['Initializing…', 'Loading assets…', 'Almost ready…', 'Welcome!'];
+            const MIN_MS = 2800;
+            const t0     = performance.now();
+            let raf;
+
+            function tick() {
+                const elapsed = performance.now() - t0;
+                const pct = Math.min(90, (elapsed / (MIN_MS * 0.82)) * 90);
+                bar.style.width = pct + '%';
+                status.textContent = msgs[Math.min(msgs.length - 2, Math.floor(pct / 32))];
+                if (pct < 90) raf = requestAnimationFrame(tick);
+            }
+            raf = requestAnimationFrame(tick);
+
+            function hide() {
+                cancelAnimationFrame(raf);
+                bar.style.transition = 'width 0.35s ease';
+                bar.style.width = '100%';
+                status.textContent = msgs[msgs.length - 1];
+                setTimeout(() => {
+                    loader.classList.add('pl-hide');
+                    setTimeout(() => loader.remove(), 700);
+                }, 380);
+            }
+
+            if (document.readyState === 'complete') {
+                setTimeout(hide, Math.max(0, MIN_MS - (performance.now() - t0)));
+            } else {
+                window.addEventListener('load', () => {
+                    setTimeout(hide, Math.max(0, MIN_MS - (performance.now() - t0)));
+                });
+            }
+        })();
+
         /* ── Theme Toggle ── */
         const html = document.documentElement;
         const themeIcon = document.getElementById('themeIcon');
