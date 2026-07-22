@@ -74,13 +74,16 @@
         .video-card:nth-child(2) { animation-delay: 0.12s; }
         .video-card:nth-child(3) { animation-delay: 0.19s; }
         .video-card:nth-child(4) { animation-delay: 0.26s; }
+        .video-card:nth-child(5) { animation-delay: 0.33s; }
+        .video-card:nth-child(6) { animation-delay: 0.4s; }
         .video-card:hover { transform: translateY(-7px); box-shadow: var(--card-shadow-hover); border-color: var(--border-hover); }
         .video-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--primary), var(--accent)); opacity: 0; transition: opacity 0.35s; z-index: 2; }
         .video-card:hover::before { opacity: 1; }
 
-        .card-thumb { height: 190px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; font-size: 3rem; }
-        .card-thumb::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px); background-size: 18px 18px; }
+        .card-thumb { height: 190px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; font-size: 3rem; background: #000; }
+        .card-thumb::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px); background-size: 18px 18px; pointer-events: none; }
         .card-thumb i.bg-icon { position: relative; z-index: 1; color: rgba(255,255,255,0.9); }
+        .card-thumb video { width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 1; pointer-events: none; }
 
         .play-badge {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -193,25 +196,19 @@
                 5. Bump the number in #videoCount above.
             -->
 
-            <div class="notice-box reveal">
-                <i class="fas fa-circle-info"></i>
-                Videos are being uploaded soon — check back shortly to watch the showreel.
-            </div>
-
             <div class="projects-grid" id="videoContainer">
 
-                <!-- Sample Slot 1 -->
-                <button class="video-card" data-src="" data-title="Brand Intro Animation">
-                    <div class="card-thumb" style="background: linear-gradient(135deg, #cc5fe7, #29012e);">
-                        <i class="fas fa-film bg-icon"></i>
+                <button class="video-card" data-src="videos/1.mp4" data-title="Motion Edit 01">
+                    <div class="card-thumb">
+                        <video src="videos/1.mp4#t=0.5" muted preload="metadata"></video>
                         <span class="play-badge"><i class="fas fa-play"></i></span>
                     </div>
                     <div class="card-body">
                         <div class="card-meta">
                             <span class="card-type">Motion Graphics</span>
                         </div>
-                        <h3 class="card-title">Brand Intro Animation</h3>
-                        <p class="card-desc">A short animated logo reveal built for social media intros.</p>
+                        <h3 class="card-title">Motion Edit 01</h3>
+                        <p class="card-desc">Motion graphics and editing showreel piece.</p>
                         <div class="card-footer">
                             <span class="visit-tag">Watch <i class="fas fa-play"></i></span>
                             <div class="card-icon"><i class="fas fa-video"></i></div>
@@ -219,18 +216,17 @@
                     </div>
                 </button>
 
-                <!-- Sample Slot 2 -->
-                <button class="video-card" data-src="" data-title="Promo Video Edit">
-                    <div class="card-thumb" style="background: linear-gradient(135deg, #0ea5e9, #052e4a);">
-                        <i class="fas fa-film bg-icon"></i>
+                <button class="video-card" data-src="videos/2.mp4" data-title="Motion Edit 02">
+                    <div class="card-thumb">
+                        <video src="videos/2.mp4#t=0.5" muted preload="metadata"></video>
                         <span class="play-badge"><i class="fas fa-play"></i></span>
                     </div>
                     <div class="card-body">
                         <div class="card-meta">
                             <span class="card-type">Video Editing</span>
                         </div>
-                        <h3 class="card-title">Promo Video Edit</h3>
-                        <p class="card-desc">Fast-paced cuts and transitions for a product promo reel.</p>
+                        <h3 class="card-title">Motion Edit 02</h3>
+                        <p class="card-desc">Motion graphics and editing showreel piece.</p>
                         <div class="card-footer">
                             <span class="visit-tag">Watch <i class="fas fa-play"></i></span>
                             <div class="card-icon"><i class="fas fa-video"></i></div>
@@ -238,18 +234,17 @@
                     </div>
                 </button>
 
-                <!-- Sample Slot 3 -->
-                <button class="video-card" data-src="" data-title="Event Highlight Reel">
-                    <div class="card-thumb" style="background: linear-gradient(135deg, #f59e0b, #4a2b02);">
-                        <i class="fas fa-film bg-icon"></i>
+                <button class="video-card" data-src="videos/3.mp4" data-title="Motion Edit 03">
+                    <div class="card-thumb">
+                        <video src="videos/3.mp4#t=0.5" muted preload="metadata"></video>
                         <span class="play-badge"><i class="fas fa-play"></i></span>
                     </div>
                     <div class="card-body">
                         <div class="card-meta">
-                            <span class="card-type">Event</span>
+                            <span class="card-type">Motion Graphics</span>
                         </div>
-                        <h3 class="card-title">Event Highlight Reel</h3>
-                        <p class="card-desc">A recap edit with motion titles and synced music cues.</p>
+                        <h3 class="card-title">Motion Edit 03</h3>
+                        <p class="card-desc">Motion graphics and editing showreel piece.</p>
                         <div class="card-footer">
                             <span class="visit-tag">Watch <i class="fas fa-play"></i></span>
                             <div class="card-icon"><i class="fas fa-video"></i></div>
@@ -257,6 +252,59 @@
                     </div>
                 </button>
 
+                <button class="video-card" data-src="videos/4.mp4" data-title="Motion Edit 04">
+                    <div class="card-thumb">
+                        <video src="videos/4.mp4#t=0.5" muted preload="metadata"></video>
+                        <span class="play-badge"><i class="fas fa-play"></i></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-meta">
+                            <span class="card-type">Video Editing</span>
+                        </div>
+                        <h3 class="card-title">Motion Edit 04</h3>
+                        <p class="card-desc">Motion graphics and editing showreel piece.</p>
+                        <div class="card-footer">
+                            <span class="visit-tag">Watch <i class="fas fa-play"></i></span>
+                            <div class="card-icon"><i class="fas fa-video"></i></div>
+                        </div>
+                    </div>
+                </button>
+                
+                <button class="video-card" data-src="videos/5.mp4" data-title="Motion Edit 05">
+                    <div class="card-thumb">
+                        <video src="videos/5.mp4#t=0.5" muted preload="metadata"></video>
+                        <span class="play-badge"><i class="fas fa-play"></i></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-meta">
+                            <span class="card-type">Motion Graphics</span>
+                        </div>
+                        <h3 class="card-title">Motion Edit 05</h3>
+                        <p class="card-desc">Motion graphics and editing showreel piece.</p>
+                        <div class="card-footer">
+                            <span class="visit-tag">Watch <i class="fas fa-play"></i></span>
+                            <div class="card-icon"><i class="fas fa-video"></i></div>
+                        </div>
+                    </div>
+                </button>
+                <button class="video-card" data-src="videos/6.mp4" data-title="Motion Edit 06">
+                    <div class="card-thumb">
+                        <video src="videos/6.mp4#t=0.5" muted preload="metadata"></video>
+                        <span class="play-badge"><i class="fas fa-play"></i></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-meta">
+                            <span class="card-type">Motion Graphics</span>
+                        </div>
+                        <h3 class="card-title">Motion Edit 06</h3>
+                        <p class="card-desc">Motion graphics and editing showreel piece.</p>
+                        <div class="card-footer">
+                            <span class="visit-tag">Watch <i class="fas fa-play"></i></span>
+                            <div class="card-icon"><i class="fas fa-video"></i></div>
+                        </div>
+                    </div>
+                </button>
+                
             </div>
         </div>
     </section>
