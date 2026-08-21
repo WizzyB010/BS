@@ -116,15 +116,25 @@
 
         .projects-section { position: relative; z-index: 1; padding: 0 0 80px; }
 
+        /* Filter tabs */
+        .filter-bar { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 40px; }
+        .filter-btn {
+            background: var(--bg-panel); border: 1px solid var(--border); color: var(--text-muted);
+            padding: 9px 20px; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+            font-family: 'DM Sans', sans-serif; transition: all 0.25s;
+        }
+        .filter-btn.active, .filter-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
         .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 28px; }
 
         .project-card {
-            display: block; text-decoration: none; color: inherit;
+            display: block; width: 100%; text-align: left; text-decoration: none; color: inherit;
             background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
-            overflow: hidden; box-shadow: var(--card-shadow);
+            overflow: hidden; box-shadow: var(--card-shadow); cursor: pointer; padding: 0; font-family: inherit;
             transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
             position: relative; animation: fadeSlideUp 0.5s ease both;
         }
+        .project-card.hidden { display: none; }
         @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
         .project-card:nth-child(1) { animation-delay: 0.05s; }
         .project-card:nth-child(2) { animation-delay: 0.12s; }
@@ -144,6 +154,15 @@
         .card-thumb i { position: relative; z-index: 1; color: rgba(255,255,255,0.92); }
         .card-thumb img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: cover; }
 
+        .price-badge {
+            position: absolute; top: 12px; right: 12px; z-index: 2;
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.3px;
+            padding: 6px 12px; border-radius: 100px; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+            display: flex; align-items: center; gap: 5px;
+        }
+        .price-badge.is-free { background: rgba(34, 197, 94, 0.18); border: 1px solid rgba(34, 197, 94, 0.4); color: #22c55e; }
+        .price-badge.is-paid { background: rgba(244, 63, 94, 0.18); border: 1px solid rgba(244, 63, 94, 0.4); color: var(--accent2); }
+
         .card-body { padding: 22px 24px 24px; }
 
         .card-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
@@ -156,6 +175,8 @@
 
         .visit-tag { display: inline-flex; align-items: center; gap: 7px; font-size: 0.82rem; font-weight: 700; color: var(--tag-color); background: var(--tag-bg); padding: 7px 14px; border-radius: 100px; border: 1px solid var(--border); transition: all 0.3s; }
         .project-card:hover .visit-tag { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .visit-tag.locked { color: var(--accent2); background: rgba(244, 63, 94, 0.08); }
+        .project-card:hover .visit-tag.locked { background: var(--accent2); color: #fff; border-color: var(--accent2); }
         .visit-tag i { font-size: 0.7rem; transition: transform 0.3s; }
         .visit-tag img { width: 12px; height: 12px; object-fit: contain; transition: transform 0.3s; }
         .project-card:hover .visit-tag i,
@@ -234,23 +255,29 @@
 
             <!--
                 HOW TO ADD A NEW TEMPLATE:
-                1. Duplicate one <a class="project-card"> block below.
-                2. Set href to your template's download/view link (Google Drive, Canva, etc.)
+                1. Duplicate one <button class="project-card"> block below.
+                2. Set data-access to "free" or "paid".
+                   - FREE: set data-file to the .pptx path (e.g. "templates/my-deck.pptx") once you've
+                     dropped the real file into the templates/ folder — clicking the card downloads it directly.
+                   - PAID: set data-price to the amount shown on the badge (e.g. "GHS 25"). There's no
+                     payment processor wired up yet, so clicking a paid card opens a pre-filled WhatsApp
+                     message so the buyer can pay and you can send the file manually.
                 3. Replace the icon + gradient in .card-thumb with a screenshot <img> if you have one.
                 4. Update the title, category tag, and description.
                 5. Bump the number in #templateCount above.
             -->
 
-            <div class="notice-box reveal">
-                <i class="fas fa-circle-info"></i>
-                Templates are being added soon — check back or reach out on WhatsApp for a custom one.
+            <div class="filter-bar">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="free">Free</button>
+                <button class="filter-btn" data-filter="paid">Paid</button>
             </div>
 
             <div class="projects-grid" id="templateContainer">
 
-                <!-- Sample Slot 1 -->
-                <a href="https://docs.google.com/presentation/d/1chLcmkgC8uTaJuH2kR5Y0wGXtWkS9CWj/edit?usp=sharing&ouid=103618546361461819697&rtpof=true&sd=true" target="_blank" class="project-card">
+                <button class="project-card" data-access="free" data-file="https://docs.google.com/presentation/d/1chLcmkgC8uTaJuH2kR5Y0wGXtWkS9CWj/export/pptx" data-title="The Ghanaian Dadesɛn">
                     <div class="card-thumb">
+                        <span class="price-badge is-free"><i class="fas fa-circle-check"></i> Free</span>
                         <img src="templates/pot.png" alt="The Ghanaian Dadesɛn">
                     </div>
                     <div class="card-body">
@@ -260,15 +287,15 @@
                         <h3 class="card-title">The Ghanaian Dadesɛn</h3>
                         <p class="card-desc">Exploring the cultural heritage, culinary utility, and modern public health realities of Ghana's traditional aluminum cauldron.</p>
                         <div class="card-footer">
-                            <span class="visit-tag">View Template <i class="fas fa-arrow-up-right-from-square"></i></span>
+                            <span class="visit-tag"><i class="fas fa-download"></i> Download Free</span>
                             <div class="card-icon"><i class="fas fa-file-powerpoint"></i></div>
                         </div>
                     </div>
-                </a>
+                </button>
 
-                <!-- Sample Slot 2 -->
-                <a href="#" class="project-card">
+                <button class="project-card" data-access="free" data-file="" data-title="School Project Template">
                     <div class="card-thumb" style="background: linear-gradient(135deg, #22c55e, #064e3b);">
+                        <span class="price-badge is-free"><i class="fas fa-circle-check"></i> Free</span>
                         <i class="fas fa-graduation-cap"></i>
                     </div>
                     <div class="card-body">
@@ -278,15 +305,15 @@
                         <h3 class="card-title">School Project Template</h3>
                         <p class="card-desc">Clean layout built for class presentations, assignments, and thesis defenses.</p>
                         <div class="card-footer">
-                            <span class="visit-tag">View Template <i class="fas fa-arrow-up-right-from-square"></i></span>
+                            <span class="visit-tag"><i class="fas fa-download"></i> Download Free</span>
                             <div class="card-icon"><i class="fas fa-file-powerpoint"></i></div>
                         </div>
                     </div>
-                </a>
+                </button>
 
-                <!-- Sample Slot 3 -->
-                <a href="#" class="project-card">
+                <button class="project-card" data-access="paid" data-price="GHS 25" data-title="Creative Portfolio Deck">
                     <div class="card-thumb" style="background: linear-gradient(135deg, #7c3aed, #2e1065);">
+                        <span class="price-badge is-paid"><i class="fas fa-lock"></i> GHS 25</span>
                         <i class="fas fa-lightbulb"></i>
                     </div>
                     <div class="card-body">
@@ -296,11 +323,11 @@
                         <h3 class="card-title">Creative Portfolio Deck</h3>
                         <p class="card-desc">A bold, modern template for showcasing creative work and ideas.</p>
                         <div class="card-footer">
-                            <span class="visit-tag">View Template <i class="fas fa-arrow-up-right-from-square"></i></span>
+                            <span class="visit-tag locked"><i class="fas fa-lock"></i> Buy — GHS 25</span>
                             <div class="card-icon"><i class="fas fa-file-powerpoint"></i></div>
                         </div>
                     </div>
-                </a>
+                </button>
 
             </div>
         </div>
@@ -338,8 +365,52 @@
             themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
 
-        document.getElementById('templateCount').textContent =
-            document.querySelectorAll('#templateContainer .project-card').length;
+        const templateCards = document.querySelectorAll('#templateContainer .project-card');
+        document.getElementById('templateCount').textContent = templateCards.length;
+
+        /* Filtering */
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const filter = btn.getAttribute('data-filter');
+                templateCards.forEach(card => {
+                    const match = filter === 'all' || card.getAttribute('data-access') === filter;
+                    card.classList.toggle('hidden', !match);
+                });
+            });
+        });
+
+        /* Download (free) / Buy via WhatsApp (paid) */
+        const WHATSAPP_NUMBER = '233595232383';
+        templateCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const access = card.getAttribute('data-access');
+                const title = card.getAttribute('data-title') || 'this template';
+
+                if (access === 'paid') {
+                    const price = card.getAttribute('data-price') || '';
+                    const msg = `Hi! I'd like to buy the "${title}" PowerPoint template${price ? ' (' + price + ')' : ''}.`;
+                    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+                    return;
+                }
+
+                const file = card.getAttribute('data-file');
+                if (file) {
+                    const link = document.createElement('a');
+                    link.href = file;
+                    link.download = '';
+                    link.rel = 'noopener';
+                    link.target = '_blank';
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                } else {
+                    const msg = `Hi! Could I get the "${title}" PowerPoint template? It's not uploaded on the site yet.`;
+                    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+                }
+            });
+        });
 
         const canvas = document.getElementById('spider-canvas');
         const ctx = canvas.getContext('2d');
