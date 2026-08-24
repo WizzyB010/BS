@@ -76,6 +76,8 @@
         .video-card:nth-child(4) { animation-delay: 0.26s; }
         .video-card:nth-child(5) { animation-delay: 0.33s; }
         .video-card:nth-child(6) { animation-delay: 0.4s; }
+        .video-card:nth-child(7) { animation-delay: 0.47s; }
+        .video-card:nth-child(8) { animation-delay: 0.54s; }
         .video-card:hover { transform: translateY(-7px); box-shadow: var(--card-shadow-hover); border-color: var(--border-hover); }
         .video-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--primary), var(--accent)); opacity: 0; transition: opacity 0.35s; z-index: 2; }
         .video-card:hover::before { opacity: 1; }
@@ -321,7 +323,24 @@
                         </div>
                     </div>
                 </button>
-                
+                <button class="video-card" data-src="videos/8.mp4" data-title="Motion Edit 08">
+                    <div class="card-thumb">
+                        <video src="videos/8.mp4#t=0.5" muted preload="metadata"></video>
+                        <span class="play-badge"><i class="fas fa-play"></i></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-meta">
+                            <span class="card-type">Motion Graphics</span>
+                        </div>
+                        <h3 class="card-title">Motion Edit 08</h3>
+                        <p class="card-desc">Motion graphics and editing showreel piece.</p>
+                        <div class="card-footer">
+                            <span class="visit-tag">Watch <i class="fas fa-play"></i></span>
+                            <div class="card-icon"><i class="fas fa-video"></i></div>
+                        </div>
+                    </div>
+                </button>
+
             </div>
         </div>
     </section>
