@@ -1,0 +1,73 @@
+// Firestore Security Rules for the "wisdom-tech-fc613" project.
+//
+// WHY THIS FILE EXISTS (read this first):
+// This site is static HTML with no server. The Firebase config in index.html
+// (apiKey, projectId, etc.) is NOT a secret — Firebase web API keys are
+// designed to be public and only identify the project to Google's servers.
+// The actual access control for the "reviews" collection is enforced here,
+// server-side, by Firestore itself. The client-side checks in index.html
+// (e.g. "if (!user) return") are just UX — anyone can call the Firestore
+// SDK directly from the browser console and skip them entirely. These rules
+// are what actually stop abuse, so they matter more than anything in the
+// HTML/JS.
+//
+// HOW TO APPLY (this repo has no Firebase CLI project linked, so I can't
+// deploy this for you):
+//   1. Go to https://console.firebase.google.com/ -> your project
+//      (wisdom-tech-fc613) -> Firestore Database -> Rules tab.
+//   2. Replace whatever is there with the contents below.
+//   3. Click "Publish".
+// (Or, if you set up the Firebase CLI later: `firebase deploy --only firestore:rules`.)
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /reviews/{reviewId} {
+
+      // Public testimonials are intentional — anyone can read the reviews list.
+      allow read: if true;
+
+      // Creating a review requires:
+      // - the caller to be signed in
+      // - the uid on the document to match the caller's own uid (no impersonation)
+      // - name/photo to match what Google actually issued in their auth token
+      //   (stops a signed-in user from posting under a fake name/photo)
+      // - rating to be a whole number 1-5
+      // - text to be a non-empty string up to 600 characters
+      // - replies to start empty
+      // - createdAt to be the server's own timestamp (not client-supplied)
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.name == request.auth.token.name
+        && request.resource.data.photo == request.auth.token.picture
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 600
+        && request.resource.data.replies is list
+        && request.resource.data.replies.size() == 0
+        && request.resource.data.createdAt == request.time;
+
+      // Only the "replies" field may ever change, and only by appending
+      // (the array can only grow by exactly one entry). This stops anyone
+      // (including the review's own author) from editing/deleting another
+      // person's review text, rating, name, or photo after the fact.
+      allow update: if request.auth != null
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['replies'])
+        && request.resource.data.replies.size() == resource.data.replies.size() + 1;
+
+      // No delete feature exists in the app today — keep it locked until one does.
+      allow delete: if false;
+    }
+
+    // Everything else is denied by default (no other collections are used
+    // by this site today).
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

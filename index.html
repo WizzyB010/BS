@@ -1668,6 +1668,9 @@
                     <button id="google-btn" class="btn btn-ghost" style="width:auto;">
                         <i class="fab fa-google"></i> Sign In with Google
                     </button>
+                    <p style="font-size:0.78rem; color:var(--text-muted); margin-top:10px;">
+                        Signing in shares your Google name and profile photo, and any review you post is publicly visible to site visitors. See our <a href="privacy.html" style="color:var(--accent);">Privacy Policy</a>.
+                    </p>
                 </div>
 
                 <!-- User Info Bar -->
@@ -1689,7 +1692,7 @@
                         <option value="2">★★☆☆☆ — Poor</option>
                         <option value="1">★☆☆☆☆ — Terrible</option>
                     </select>
-                    <textarea id="review-text" rows="3" placeholder="How was your experience?" required></textarea>
+                    <textarea id="review-text" rows="3" maxlength="600" placeholder="How was your experience?" required></textarea>
                     <button type="submit" class="btn btn-primary" style="width:100%; border-radius:12px; justify-content:center;">
                         <i class="fas fa-paper-plane"></i> Post Review
                     </button>
@@ -1711,6 +1714,7 @@
         <div class="container footer-inner">
             <p class="footer-copy">&copy; 2026 <span>Wisdom Ahiadeke Computing</span>. Designed with passion.</p>
             <div class="footer-links">
+                <a href="privacy.html" aria-label="Privacy Policy" title="Privacy Policy" style="font-size:0.85rem;">Privacy</a>
                 <a href="https://wa.me/233595232383" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i></a>
                 <a href="https://github.com/WizzyB010" aria-label="GitHub" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
                 <a href="https://www.linkedin.com/in/wisdom-ahiadeke-b1a957280/" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
@@ -2132,6 +2136,12 @@
                 msgEl.style.display = 'block';
                 return;
             }
+            if (text.length > 600 || !Number.isInteger(rating) || rating < 1 || rating > 5) {
+                msgEl.textContent = 'Please check your review length and rating.';
+                msgEl.style.color = 'var(--accent2)';
+                msgEl.style.display = 'block';
+                return;
+            }
 
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting…';
@@ -2208,6 +2218,20 @@
             return html;
         }
 
+        /* Escapes user-controlled text before it's ever inserted via innerHTML,
+           so a review/reply can't carry a stored XSS payload (e.g. <img onerror=...>). */
+        function escapeHTML(str) {
+            return String(str ?? '').replace(/[&<>"']/g, ch => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[ch]));
+        }
+
+        /* Firestore auto-IDs are always alphanumeric, but this keeps the onclick
+           attribute value safe even if that ever stops being true. */
+        function escapeAttr(str) {
+            return escapeHTML(str).replace(/`/g, '&#96;');
+        }
+
         function renderReviews(reviews) {
             reviewsList.innerHTML = "";
             if (reviews.length === 0) {
@@ -2217,6 +2241,10 @@
             reviews.forEach((data) => {
                 const stars = getStarHTML(data.rating);
                 const user = auth.currentUser;
+                const safeId = escapeAttr(data.id);
+                const safeName = escapeHTML(data.name);
+                const safeText = escapeHTML(data.text);
+                const safePhoto = escapeAttr(data.photo);
 
                 let repliesHTML = "";
                 if (data.replies && data.replies.length > 0) {
@@ -2224,31 +2252,31 @@
                     data.replies.forEach(rep => {
                         repliesHTML += `
                             <div style="background:var(--tag-bg); padding:12px 16px; border-radius:12px; margin-bottom:8px; font-size:0.88rem; border:1px solid var(--border);">
-                                <strong style="color:var(--text);">${rep.name}</strong>: <span style="color:var(--text-soft)">${rep.text}</span>
+                                <strong style="color:var(--text);">${escapeHTML(rep.name)}</strong>: <span style="color:var(--text-soft)">${escapeHTML(rep.text)}</span>
                             </div>`;
                     });
                     repliesHTML += `</div>`;
                 }
 
-                const replyBtn = user ? `<button class="r-reply-btn" onclick="toggleReply('${data.id}')"><i class="fas fa-reply"></i> Reply</button>` : '';
+                const replyBtn = user ? `<button class="r-reply-btn" onclick="toggleReply('${safeId}')"><i class="fas fa-reply"></i> Reply</button>` : '';
                 const replyInput = `
-                    <div id="reply-form-${data.id}" style="display:none; margin-top:14px; >
+                    <div id="reply-form-${safeId}" style="display:none; margin-top:14px; >
                         <div style="display:flex; gap:10px;">
-                            <input type="text" id="reply-input-${data.id}" placeholder="Write a reply..." style="margin-bottom:0; flex:1;">
-                            <button class="btn btn-primary" style="padding:10px 20px; border-radius:12px; font-size:0.82rem; white-space:nowrap;" onclick="submitReply('${data.id}')">Send</button>
+                            <input type="text" id="reply-input-${safeId}" maxlength="300" placeholder="Write a reply..." style="margin-bottom:0; flex:1;">
+                            <button class="btn btn-primary" style="padding:10px 20px; border-radius:12px; font-size:0.82rem; white-space:nowrap;" onclick="submitReply('${safeId}')">Send</button>
                         </div>
                     </div>`;
 
                 reviewsList.innerHTML += `
                     <div class="r-item">
                         <div class="r-header">
-                            <img src="${data.photo}" class="r-pic" alt="${data.name}">
+                            <img src="${safePhoto}" class="r-pic" alt="${safeName}">
                             <div>
-                                <div class="r-name">${data.name}</div>
+                                <div class="r-name">${safeName}</div>
                                 <div class="r-stars">${stars}</div>
                             </div>
                         </div>
-                        <div class="r-text">${data.text}</div>
+                        <div class="r-text">${safeText}</div>
                         ${replyBtn}
                         ${replyInput}
                         ${repliesHTML}
@@ -2263,9 +2291,9 @@
 
         window.submitReply = async (id) => {
             const input = document.getElementById(`reply-input-${id}`);
-            const text = input.value;
+            const text = input.value.trim();
             const user = auth.currentUser;
-            if (user && text) {
+            if (user && text && text.length <= 300) {
                 const replyData = {
                     name: user.displayName,
                     photo: user.photoURL,
